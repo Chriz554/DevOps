@@ -36,13 +36,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
     - name: Copy docker-compose.yml to VPS
       uses: appleboy/scp-action@master
       with:
         host: ${{ secrets.SSH_HOST }}
         username: ${{ secrets.SSH_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        source: "docker-compose.yml"
+        source: "devops/docker-compose.yml"
         target: "~/app"
 
     - name: Deploy to VPS

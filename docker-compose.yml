@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   app:
-    image: ghcr.io/${GITHUB_REPOSITORY}:latest
+    image: ghcr.io/chriz554/devops:latest
     container_name: app
     ports:
       - "3000:3000"

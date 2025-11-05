@@ -1,27 +1,25 @@
 name: CI/CD Pipeline
-
 on:
   push:
     branches: [ main ]
 
 jobs:
-
   build-and-push:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-
+      
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
-
+      
     - name: Log in to registry
       uses: docker/login-action@v3
       with:
         registry: ghcr.io
         username: ${{ secrets.REGISTRY_USER }}
         password: ${{ secrets.REGISTRY_TOKEN }}
-
+        
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
@@ -34,21 +32,19 @@ jobs:
   deploy:
     needs: build-and-push
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-
+      
     - name: Copy docker-compose.yml to VPS
       uses: appleboy/scp-action@master
       with:
         host: ${{ secrets.SSH_HOST }}
         username: ${{ secrets.SSH_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        source: "./devops/docker-compose.yml"
-        target: "~/app/docker-compose.yml"
-
-
+        source: "docker-compose.yml"
+        target: "~/app/"
+        
     - name: Deploy to VPS
       uses: appleboy/ssh-action@master
       with:

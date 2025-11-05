@@ -42,8 +42,8 @@ jobs:
         host: ${{ secrets.SSH_HOST }}
         username: ${{ secrets.SSH_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        source: "./docker-compose.yml"
-        target: "~/app/docker-compose.yml"
+        source: "docker-compose.yml"
+        target: "~/app"
 
     - name: Deploy to VPS
       uses: appleboy/ssh-action@master

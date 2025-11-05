@@ -2,7 +2,6 @@ name: CI/CD Pipeline
 on:
   push:
     branches: [ main ]
-
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -28,7 +27,6 @@ jobs:
         tags: |
           ghcr.io/chriz554/devops:latest
           ghcr.io/chriz554/devops:${{ github.sha }}
-
   deploy:
     needs: build-and-push
     runs-on: ubuntu-latest
@@ -53,5 +51,7 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
           cd ~/app
+          echo "${{ secrets.REGISTRY_TOKEN }}" | docker login ghcr.io -u ${{ secrets.REGISTRY_USER }} --password-stdin
           docker-compose pull
           docker-compose up -d
+          docker logout ghcr.io

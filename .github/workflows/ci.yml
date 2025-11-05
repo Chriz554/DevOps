@@ -1,10 +1,11 @@
-name: CI/CD
+name: CI/CD Pipeline
 
 on:
   push:
     branches: [ main ]
 
 jobs:
+
   build-and-push:
     runs-on: ubuntu-latest
     steps:
@@ -29,3 +30,28 @@ jobs:
         tags: |
           ghcr.io/chriz554/devops:latest
           ghcr.io/chriz554/devops:${{ github.sha }}
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Copy docker-compose.yml to VPS
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        source: "./docker-compose.yml"
+        target: "~/app/docker-compose.yml"
+
+    - name: Deploy to VPS
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          cd ~/app
+          docker-compose pull
+          docker-compose up -d
